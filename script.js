@@ -238,3 +238,4 @@ upButton.addEventListener('click', () => handleDirectionChange('up'));
 downButton.addEventListener('click', () => handleDirectionChange('down'));
 leftButton.addEventListener('click', () => handleDirectionChange('left'));
 rightButton.addEventListener('click', () => handleDirectionChange('right'));
+
