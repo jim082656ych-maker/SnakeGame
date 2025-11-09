@@ -1,4 +1,4 @@
-// script.js (完整更新版 - 響應式 + 觸控功能)
+// script.js (最終修正版 - 確保觸控按鈕可靠運作)
 
 // --- 1. 取得 HTML 元素 ---
 const canvas = document.getElementById('gameCanvas');
@@ -7,7 +7,7 @@ const scoreDisplay = document.getElementById('scoreDisplay');
 const restartButton = document.getElementById('restartButton');
 const pauseButton = document.getElementById('pauseButton');
 
-// ★ (新功能) 取得觸控方向按鈕
+// ★ 取得觸控方向按鈕
 const upButton = document.getElementById('upButton');
 const downButton = document.getElementById('downButton');
 const leftButton = document.getElementById('leftButton');
@@ -39,16 +39,18 @@ let food = {};
 createFood(); 
 
 // --- 5. 蛇的移動方向 ---
-let dx = 1; 
-let dy = 0;
+let dx = 1; // X 軸方向 (1:右, -1:左, 0:不動)
+let dy = 0; // Y 軸方向 (1:下, -1:上, 0:不動)
+
+// ★ (關鍵修正) 這個變數用來儲存下一次移動的方向，防止在單一遊戲迴圈內連續按鍵造成 180 度轉向。
+let nextDx = dx;
+let nextDy = dy; 
 
 // --- 6. 主要的遊戲迴圈 (Game Loop) ---
 function gameLoop() {
     if (isGameOver) {
         clearInterval(gameInterval);
         ctx.fillStyle = "black";
-        ctx.font = "40px 'Arial'";
-        // ★ (修改) 文字自適應畫布大小
         const fontSize = Math.min(canvas.width / 8, 40);
         ctx.font = `${fontSize}px Arial`;
         ctx.fillText("遊戲結束!", canvas.width / 2 - ctx.measureText("遊戲結束!").width / 2, canvas.height / 2);
@@ -59,7 +61,10 @@ function gameLoop() {
         return; 
     }
     
-    // (遊戲進行中)
+    // (在移動前更新當前方向為下一方向，確保方向改變生效)
+    dx = nextDx;
+    dy = nextDy;
+
     moveSnake(); 
     ctx.fillStyle = '#dddddd'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -67,7 +72,7 @@ function gameLoop() {
     drawSnake(); 
 }
 
-// --- 7. 畫出蛇的函式 ---
+// --- 7. 畫出蛇的函式 (不變) ---
 function drawSnake() {
     ctx.fillStyle = 'green';
     snake.forEach(segment => {
@@ -75,14 +80,15 @@ function drawSnake() {
     });
 }
 
-// --- 8. 畫出食物的函式 ---
+// --- 8. 畫出食物的函式 (不變) ---
 function drawFood() {
     ctx.fillStyle = 'red';
     ctx.fillRect(food.x * grid, food.y * grid, grid, grid);
 }
 
-// --- 10. 移動蛇的函式 ---
+// --- 10. 移動蛇的函式 (不變) ---
 function moveSnake() {
+    // ... (移動、穿牆、撞到自己、吃食物的邏輯與之前相同) ...
     const head = { x: snake[0].x, y: snake[0].y };
     head.x += dx;
     head.y += dy;
@@ -117,7 +123,7 @@ function moveSnake() {
     }
 }
 
-// --- 加速遊戲的函式 ---
+// --- 加速遊戲的函式 (不變) ---
 function speedUpGame() {
     if (currentSpeed > minSpeed) {
         currentSpeed -= speedIncrease;
@@ -126,12 +132,12 @@ function speedUpGame() {
     }
 }
 
-// --- 產生隨機位置的函式 ---
+// --- 產生隨機位置的函式 (不變) ---
 function randomGridPosition() {
     return Math.floor(Math.random() * gridCount);
 }
 
-// --- 產生新食物的函式 ---
+// --- 產生新食物的函式 (不變) ---
 function createFood() {
     food.x = randomGridPosition();
     food.y = randomGridPosition();
@@ -141,40 +147,53 @@ function createFood() {
     }
 }
 
-// --- 改變方向的函式 (鍵盤) ---
-function changeDirection(event) {
-    if (event.key === 'p' || event.key === 'P') {
-        togglePauseGame(); 
-        return; 
-    }
+// ★ (核心修正) 統一處理方向改變的函式 (處理鍵盤和觸控)
+function handleDirectionChange(direction) {
     if (isGameOver || isPaused) return; 
     
-    handleDirectionChange(event.key); // ★ (新功能) 統一處理方向改變
-}
-
-// ★ (這是全新的) 統一處理方向改變的函式 (給鍵盤和觸控用)
-function handleDirectionChange(direction) {
-    // 檢查防止180度迴轉
+    // 檢查防止 180 度迴轉
     const goingUp = (dy === -1), goingDown = (dy === 1);
     const goingRight = (dx === 1), goingLeft = (dx === -1);
-
-    if (direction === "ArrowUp" && !goingDown) { dx = 0; dy = -1; }
-    else if (direction === "ArrowDown" && !goingUp) { dx = 0; dy = 1; }
-    else if (direction === "ArrowLeft" && !goingRight) { dx = -1; dy = 0; }
-    else if (direction === "ArrowRight" && !goingLeft) { dx = 1, dy = 0; }
-    // ★ (新功能) 觸控按鈕的方向處理
-    else if (direction === "up" && !goingDown) { dx = 0; dy = -1; }
-    else if (direction === "down" && !goingUp) { dx = 0; dy = 1; }
-    else if (direction === "left" && !goingRight) { dx = -1; dy = 0; }
-    else if (direction === "right" && !goingLeft) { dx = 1, dy = 0; }
+    
+    // 判斷按鍵/按鈕後，設定 nextDx 和 nextDy
+    switch (direction) {
+        case "ArrowUp":
+        case "up":
+            if (!goingDown) { nextDx = 0; nextDy = -1; }
+            break;
+        case "ArrowDown":
+        case "down":
+            if (!goingUp) { nextDx = 0; nextDy = 1; }
+            break;
+        case "ArrowLeft":
+        case "left":
+            if (!goingRight) { nextDx = -1; nextDy = 0; }
+            break;
+        case "ArrowRight":
+        case "right":
+            if (!goingLeft) { nextDx = 1; nextDy = 0; }
+            break;
+        case 'p':
+        case 'P':
+            togglePauseGame(); 
+            break;
+    }
 }
 
+// --- 鍵盤事件監聽 (修正為呼叫統一處理函式) ---
+document.addEventListener("keydown", (event) => {
+    // 鍵盤按下時，直接將按鍵名稱傳入處理函式
+    handleDirectionChange(event.key);
+});
 
-// --- 重新開始遊戲的函式 ---
+
+// --- 重新開始遊戲的函式 (不變) ---
 function restartGame() {
     snake = [ { x: 10, y: 10 } ];
     dx = 1;
     dy = 0;
+    nextDx = 1; // 重設 nextDx/nextDy
+    nextDy = 0;
     score = 0;
     foodEatenCount = 0;
     currentSpeed = 100;
@@ -191,7 +210,7 @@ function restartGame() {
     gameInterval = setInterval(gameLoop, currentSpeed);
 }
 
-// --- 暫停/繼續 遊戲的函式 ---
+// --- 暫停/繼續 遊戲的函式 (不變) ---
 function togglePauseGame() {
     if (isGameOver) return;
 
@@ -202,7 +221,6 @@ function togglePauseGame() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height); 
         ctx.fillStyle = "white"; 
-        // ★ (修改) 文字自適應畫布大小
         const fontSize = Math.min(canvas.width / 8, 40);
         ctx.font = `${fontSize}px Arial`;
         ctx.fillText("遊戲暫停", canvas.width / 2 - ctx.measureText("遊戲暫停").width / 2, canvas.height / 2);
@@ -218,16 +236,13 @@ function togglePauseGame() {
 // --- 9. 啟動遊戲！ ---
 gameInterval = setInterval(gameLoop, currentSpeed); 
 
-// --- 11. 鍵盤事件監聽器 ---
-document.addEventListener("keydown", changeDirection);
-
-// --- 重新開始按鈕 點擊監聽 ---
+// --- 重新開始按鈕 點擊監聽 (不變) ---
 restartButton.addEventListener('click', restartGame);
 
-// --- 暫停按鈕 點擊監聽 ---
+// --- 暫停按鈕 點擊監聽 (不變) ---
 pauseButton.addEventListener('click', togglePauseGame);
 
-// ★ (這是全新的) 觸控方向按鈕點擊監聽
+// ★ (這是全新的) 觸控方向按鈕點擊監聽 (確保事件能正確傳遞)
 upButton.addEventListener('click', () => handleDirectionChange('up'));
 downButton.addEventListener('click', () => handleDirectionChange('down'));
 leftButton.addEventListener('click', () => handleDirectionChange('left'));
