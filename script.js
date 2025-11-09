@@ -39,10 +39,8 @@ let food = {};
 createFood(); 
 
 // --- 5. 蛇的移動方向 ---
-let dx = 1; // X 軸方向 (1:右, -1:左, 0:不動)
-let dy = 0; // Y 軸方向 (1:下, -1:上, 0:不動)
-
-// ★ (關鍵修正) 這個變數用來儲存下一次移動的方向，防止在單一遊戲迴圈內連續按鍵造成 180 度轉向。
+let dx = 1; 
+let dy = 0; 
 let nextDx = dx;
 let nextDy = dy; 
 
@@ -61,7 +59,6 @@ function gameLoop() {
         return; 
     }
     
-    // (在移動前更新當前方向為下一方向，確保方向改變生效)
     dx = nextDx;
     dy = nextDy;
 
@@ -72,7 +69,7 @@ function gameLoop() {
     drawSnake(); 
 }
 
-// --- 7. 畫出蛇的函式 (不變) ---
+// --- 7. 畫出蛇的函式 ---
 function drawSnake() {
     ctx.fillStyle = 'green';
     snake.forEach(segment => {
@@ -80,26 +77,23 @@ function drawSnake() {
     });
 }
 
-// --- 8. 畫出食物的函式 (不變) ---
+// --- 8. 畫出食物的函式 ---
 function drawFood() {
     ctx.fillStyle = 'red';
     ctx.fillRect(food.x * grid, food.y * grid, grid, grid);
 }
 
-// --- 10. 移動蛇的函式 (不變) ---
+// --- 10. 移動蛇的函式 ---
 function moveSnake() {
-    // ... (移動、穿牆、撞到自己、吃食物的邏輯與之前相同) ...
     const head = { x: snake[0].x, y: snake[0].y };
     head.x += dx;
     head.y += dy;
 
-    // (穿牆邏輯 - 不變)
     if (head.x < 0) head.x = gridCount - 1;
     else if (head.x >= gridCount) head.x = 0;
     if (head.y < 0) head.y = gridCount - 1;
     else if (head.y >= gridCount) head.y = 0;
 
-    // (檢查撞到自己 - 不變)
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
             isGameOver = true;
@@ -123,7 +117,7 @@ function moveSnake() {
     }
 }
 
-// --- 加速遊戲的函式 (不變) ---
+// --- 加速遊戲的函式 ---
 function speedUpGame() {
     if (currentSpeed > minSpeed) {
         currentSpeed -= speedIncrease;
@@ -132,12 +126,12 @@ function speedUpGame() {
     }
 }
 
-// --- 產生隨機位置的函式 (不變) ---
+// --- 產生隨機位置的函式 ---
 function randomGridPosition() {
     return Math.floor(Math.random() * gridCount);
 }
 
-// --- 產生新食物的函式 (不變) ---
+// --- 產生新食物的函式 ---
 function createFood() {
     food.x = randomGridPosition();
     food.y = randomGridPosition();
@@ -147,15 +141,13 @@ function createFood() {
     }
 }
 
-// ★ (核心修正) 統一處理方向改變的函式 (處理鍵盤和觸控)
+// --- 統一處理方向改變的函式 ---
 function handleDirectionChange(direction) {
     if (isGameOver || isPaused) return; 
     
-    // 檢查防止 180 度迴轉
     const goingUp = (dy === -1), goingDown = (dy === 1);
     const goingRight = (dx === 1), goingLeft = (dx === -1);
     
-    // 判斷按鍵/按鈕後，設定 nextDx 和 nextDy
     switch (direction) {
         case "ArrowUp":
         case "up":
@@ -180,19 +172,18 @@ function handleDirectionChange(direction) {
     }
 }
 
-// --- 鍵盤事件監聽 (修正為呼叫統一處理函式) ---
+// --- 鍵盤事件監聽 ---
 document.addEventListener("keydown", (event) => {
-    // 鍵盤按下時，直接將按鍵名稱傳入處理函式
     handleDirectionChange(event.key);
 });
 
 
-// --- 重新開始遊戲的函式 (不變) ---
+// --- 重新開始遊戲的函式 ---
 function restartGame() {
     snake = [ { x: 10, y: 10 } ];
     dx = 1;
     dy = 0;
-    nextDx = 1; // 重設 nextDx/nextDy
+    nextDx = 1; 
     nextDy = 0;
     score = 0;
     foodEatenCount = 0;
@@ -210,7 +201,7 @@ function restartGame() {
     gameInterval = setInterval(gameLoop, currentSpeed);
 }
 
-// --- 暫停/繼續 遊戲的函式 (不變) ---
+// --- 暫停/繼續 遊戲的函式 ---
 function togglePauseGame() {
     if (isGameOver) return;
 
@@ -236,13 +227,13 @@ function togglePauseGame() {
 // --- 9. 啟動遊戲！ ---
 gameInterval = setInterval(gameLoop, currentSpeed); 
 
-// --- 重新開始按鈕 點擊監聽 (不變) ---
+// --- 重新開始按鈕 點擊監聽 ---
 restartButton.addEventListener('click', restartGame);
 
-// --- 暫停按鈕 點擊監聽 (不變) ---
+// --- 暫停按鈕 點擊監聽 ---
 pauseButton.addEventListener('click', togglePauseGame);
 
-// ★ (這是全新的) 觸控方向按鈕點擊監聽 (確保事件能正確傳遞)
+// ★ 觸控方向按鈕點擊監聽
 upButton.addEventListener('click', () => handleDirectionChange('up'));
 downButton.addEventListener('click', () => handleDirectionChange('down'));
 leftButton.addEventListener('click', () => handleDirectionChange('left'));

@@ -1,4 +1,4 @@
-/* style.css (完整更新版 - 響應式 + 觸控按鈕) */
+/* style.css (完整更新版 - 包含響應式 + 觸控按鈕) */
 
 body {
     display: flex;
@@ -34,7 +34,7 @@ h1 {
     margin-bottom: 15px; 
 }
 
-/* ★ (新功能) 觸控方向按鈕區塊 */
+/* ★ (這就是你遺漏的) 觸控方向按鈕區塊 */
 .touch-controls {
     display: flex; /* 讓內容垂直排列 */
     flex-direction: column; 
@@ -72,7 +72,7 @@ h1 {
     opacity: 1;
 }
 
-/* ★ (新功能) 預設在桌機上隱藏觸控按鈕，只在小螢幕顯示 */
+/* ★ (這就是你遺漏的) 預設在桌機上隱藏觸控按鈕，只在小螢幕顯示 */
 @media (min-width: 768px) {
     .touch-controls {
         display: none; /* 在寬螢幕上隱藏 */
