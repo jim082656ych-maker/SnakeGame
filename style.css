@@ -1,6 +1,5 @@
-/* style.css (完整更新版) */
+/* style.css (完整更新版 - 響應式 + 觸控按鈕) */
 
-/* 讓整個網頁的內容都在畫面正中間 */
 body {
     display: flex;
     flex-direction: column; 
@@ -11,42 +10,102 @@ body {
     background-color: #f0f8ff; 
     font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
     margin: 0; 
+    overflow: hidden; 
 }
 
-/* 畫布 */
+h1 { 
+    font-size: 2.5em; 
+    margin-bottom: 10px;
+}
+
 #gameCanvas {
     border: 2px solid #000000;
     background-color: #dddddd;
+    max-width: 90vw; 
+    max-height: 90vh; 
+    width: min(400px, 90vw); 
+    height: min(400px, 90vw); 
 }
 
-/* 計分板 */
 #scoreDisplay {
-    font-size: 24px; 
+    font-size: 1.5em; 
     color: #333; 
     margin-top: 5px; 
     margin-bottom: 15px; 
 }
 
-/* ★ (新功能) 按鈕的容器 */
+/* ★ (新功能) 觸控方向按鈕區塊 */
+.touch-controls {
+    display: flex; /* 讓內容垂直排列 */
+    flex-direction: column; 
+    align-items: center; /* 水平置中 */
+    margin-top: 20px;
+    width: min(300px, 80vw); /* 控制整個方向盤的寬度 */
+    user-select: none; /* 防止手機長按時選取文字 */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+}
+
+.left-right-buttons {
+    display: flex; /* 讓左右按鈕並排 */
+    width: 100%;
+    justify-content: space-between; /* 左右按鈕分開 */
+    margin: 10px 0; /* 上下有點距離 */
+}
+
+.arrow-button {
+    padding: 15px 20px; /* 大一點，好按 */
+    font-size: 1.5em; /* 箭頭字體大一點 */
+    background-color: #6c757d; /* 灰色 */
+    color: white;
+    border: none;
+    border-radius: 8px; /* 圓角更明顯 */
+    cursor: pointer;
+    flex-grow: 1; /* 讓按鈕盡量填滿空間 */
+    margin: 0 5px; /* 按鈕間隔 */
+    opacity: 0.8; /* 稍微透明 */
+}
+
+.arrow-button:hover {
+    background-color: #5a6268;
+    opacity: 1;
+}
+
+/* ★ (新功能) 預設在桌機上隱藏觸控按鈕，只在小螢幕顯示 */
+@media (min-width: 768px) {
+    .touch-controls {
+        display: none; /* 在寬螢幕上隱藏 */
+    }
+}
+@media (max-width: 767px) {
+    .touch-controls {
+        display: flex; /* 在小螢幕上顯示 */
+    }
+}
+
+
 .controls {
-    margin-top: 20px; /* 離畫布 20px */
+    margin-top: 20px; 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
 }
 
-/* ★ (新功能) 針對所有的 button */
 .controls button {
-    padding: 10px 20px; /* 按鈕的內邊距 */
-    font-size: 18px; /* 字體大小 */
+    padding: 10px 20px; 
+    font-size: 1em; 
     font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
-    border: none; /* 不要邊框 */
-    border-radius: 5px; /* 圓角 */
-    cursor: pointer; /* 滑鼠移上去變手指 */
-    margin: 0 5px; /* 兩個按鈕之間的距離 */
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin: 5px; 
+    min-width: 100px; 
 }
 
-/* ★ (新功能) 「暫停」按鈕的樣式 */
 #pauseButton {
-    display: inline-block; /* 預設顯示 (inline-block 才能跟別人排在一起) */
-    background-color: #ffc107; /* 警告的黃色 */
+    display: inline-block; 
+    background-color: #ffc107; 
     color: black;
 }
 
@@ -54,13 +113,10 @@ body {
     background-color: #e0a800;
 }
 
-
-/* 「重新開始」按鈕的樣式 */
 #restartButton {
-    display: none; /* 1. 預設是隱藏的 */
-    
-    color: white; /* 白色文字 */
-    background-color: #007BFF; /* 藍色背景 */
+    display: none; 
+    color: white; 
+    background-color: #007BFF; 
 }
 
 #restartButton:hover {

@@ -1,21 +1,26 @@
-// script.js (完整更新版 - 第十四步：暫停功能)
+// script.js (完整更新版 - 響應式 + 觸控功能)
 
 // --- 1. 取得 HTML 元素 ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const restartButton = document.getElementById('restartButton');
-// ★ (新功能) 取得「暫停按鈕」
 const pauseButton = document.getElementById('pauseButton');
+
+// ★ (新功能) 取得觸控方向按鈕
+const upButton = document.getElementById('upButton');
+const downButton = document.getElementById('downButton');
+const leftButton = document.getElementById('leftButton');
+const rightButton = document.getElementById('rightButton');
+
 
 // --- 2. 遊戲的基本單位 ---
 const grid = 20;
-const gridCount = canvas.width / grid; // 20
+const gridCount = canvas.width / grid; 
 
 // --- 遊戲狀態 ---
 let isGameOver = false;
 let gameInterval; 
-// ★ (新功能) 遊戲暫停狀態
 let isPaused = false; 
 
 // --- 計分 & 加速 相關變數 ---
@@ -43,10 +48,13 @@ function gameLoop() {
         clearInterval(gameInterval);
         ctx.fillStyle = "black";
         ctx.font = "40px 'Arial'";
-        ctx.fillText("遊戲結束!", canvas.width / 4, canvas.height / 2);
+        // ★ (修改) 文字自適應畫布大小
+        const fontSize = Math.min(canvas.width / 8, 40);
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillText("遊戲結束!", canvas.width / 2 - ctx.measureText("遊戲結束!").width / 2, canvas.height / 2);
         
-        restartButton.style.display = 'inline-block'; // 顯示「重新開始」
-        pauseButton.style.display = 'none'; // ★ 隱藏「暫停」
+        restartButton.style.display = 'inline-block'; 
+        pauseButton.style.display = 'none'; 
         
         return; 
     }
@@ -97,7 +105,6 @@ function moveSnake() {
     const ateFood = (head.x === food.x && head.y === food.y);
     
     if (ateFood) {
-        // (計分與加速邏輯 - 不變)
         score += 10;
         scoreDisplay.textContent = "分數: " + score;
         foodEatenCount++;
@@ -134,30 +141,37 @@ function createFood() {
     }
 }
 
-// --- 改變方向的函式 ---
+// --- 改變方向的函式 (鍵盤) ---
 function changeDirection(event) {
-    // ★ (新功能) 檢查是否按下 'P' 鍵來暫停
     if (event.key === 'p' || event.key === 'P') {
-        togglePauseGame(); // 呼叫暫停函式
-        return; // 結束
+        togglePauseGame(); 
+        return; 
     }
-
-    // (新功能) 如果遊戲結束 或 遊戲暫停，就不能改變方向
     if (isGameOver || isPaused) return; 
     
-    // (防止180度迴轉 - 不變)
+    handleDirectionChange(event.key); // ★ (新功能) 統一處理方向改變
+}
+
+// ★ (這是全新的) 統一處理方向改變的函式 (給鍵盤和觸控用)
+function handleDirectionChange(direction) {
+    // 檢查防止180度迴轉
     const goingUp = (dy === -1), goingDown = (dy === 1);
     const goingRight = (dx === 1), goingLeft = (dx === -1);
 
-    if (event.key === "ArrowUp" && !goingDown) { dx = 0; dy = -1; }
-    else if (event.key === "ArrowDown" && !goingUp) { dx = 0; dy = 1; }
-    else if (event.key === "ArrowLeft" && !goingRight) { dx = -1; dy = 0; }
-    else if (event.key === "ArrowRight" && !goingLeft) { dx = 1, dy = 0; }
+    if (direction === "ArrowUp" && !goingDown) { dx = 0; dy = -1; }
+    else if (direction === "ArrowDown" && !goingUp) { dx = 0; dy = 1; }
+    else if (direction === "ArrowLeft" && !goingRight) { dx = -1; dy = 0; }
+    else if (direction === "ArrowRight" && !goingLeft) { dx = 1, dy = 0; }
+    // ★ (新功能) 觸控按鈕的方向處理
+    else if (direction === "up" && !goingDown) { dx = 0; dy = -1; }
+    else if (direction === "down" && !goingUp) { dx = 0; dy = 1; }
+    else if (direction === "left" && !goingRight) { dx = -1; dy = 0; }
+    else if (direction === "right" && !goingLeft) { dx = 1, dy = 0; }
 }
+
 
 // --- 重新開始遊戲的函式 ---
 function restartGame() {
-    // 1. 重設所有遊戲變數
     snake = [ { x: 10, y: 10 } ];
     dx = 1;
     dy = 0;
@@ -165,54 +179,37 @@ function restartGame() {
     foodEatenCount = 0;
     currentSpeed = 100;
     isGameOver = false;
-    isPaused = false; // ★ (新功能) 重設暫停狀態
+    isPaused = false; 
 
-    // 2. 隱藏「重新開始」按鈕，顯示「暫停」按鈕
     restartButton.style.display = 'none';
-    pauseButton.style.display = 'inline-block'; // ★ (新功能)
-    pauseButton.textContent = '暫停'; // ★ (新功能) 確保文字是「暫停」
+    pauseButton.style.display = 'inline-block'; 
+    pauseButton.textContent = '暫停'; 
 
-    // 3. 更新計分板
     scoreDisplay.textContent = "分數: 0";
-
-    // 4. 產生新食物
     createFood();
-
-    // 5. 清除舊的計時器
     clearInterval(gameInterval);
-
-    // 6. 用「初始速度」重新啟動遊戲
     gameInterval = setInterval(gameLoop, currentSpeed);
 }
 
-// --- ★ (這是全新的) 暫停/繼續 遊戲的函式 ---
+// --- 暫停/繼續 遊戲的函式 ---
 function togglePauseGame() {
-    // 如果遊戲結束了，就不能暫停
     if (isGameOver) return;
 
-    // 翻轉「暫停狀態」 (true 變 false, false 變 true)
     isPaused = !isPaused; 
 
     if (isPaused) {
-        // --- 遊戲「被暫停」 ---
-        // 1. 停止遊戲迴圈
         clearInterval(gameInterval);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height); 
+        ctx.fillStyle = "white"; 
+        // ★ (修改) 文字自適應畫布大小
+        const fontSize = Math.min(canvas.width / 8, 40);
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillText("遊戲暫停", canvas.width / 2 - ctx.measureText("遊戲暫停").width / 2, canvas.height / 2);
         
-        // 2. 畫上「暫停」浮水印
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // 半透明黑色
-        ctx.fillRect(0, 0, canvas.width, canvas.height); // 蓋住整個畫面
-        ctx.fillStyle = "white"; // 白色字
-        ctx.font = "40px 'Arial'";
-        ctx.fillText("遊戲暫停", canvas.width / 4, canvas.height / 2);
-        
-        // 3. 更改按鈕文字
         pauseButton.textContent = '繼續';
     } else {
-        // --- 遊戲「被繼續」 ---
-        // 1. 更改按鈕文字
         pauseButton.textContent = '暫停';
-        
-        // 2. 重新啟動遊戲迴圈 (用目前的速度)
         gameInterval = setInterval(gameLoop, currentSpeed);
     }
 }
@@ -227,5 +224,11 @@ document.addEventListener("keydown", changeDirection);
 // --- 重新開始按鈕 點擊監聽 ---
 restartButton.addEventListener('click', restartGame);
 
-// --- ★ (新功能) 暫停按鈕 點擊監聽 ---
+// --- 暫停按鈕 點擊監聽 ---
 pauseButton.addEventListener('click', togglePauseGame);
+
+// ★ (這是全新的) 觸控方向按鈕點擊監聽
+upButton.addEventListener('click', () => handleDirectionChange('up'));
+downButton.addEventListener('click', () => handleDirectionChange('down'));
+leftButton.addEventListener('click', () => handleDirectionChange('left'));
+rightButton.addEventListener('click', () => handleDirectionChange('right'));
