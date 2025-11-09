@@ -1,0 +1,68 @@
+/* style.css (完整更新版) */
+
+/* 讓整個網頁的內容都在畫面正中間 */
+body {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    
+    height: 100vh; 
+    background-color: #f0f8ff; 
+    font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
+    margin: 0; 
+}
+
+/* 畫布 */
+#gameCanvas {
+    border: 2px solid #000000;
+    background-color: #dddddd;
+}
+
+/* 計分板 */
+#scoreDisplay {
+    font-size: 24px; 
+    color: #333; 
+    margin-top: 5px; 
+    margin-bottom: 15px; 
+}
+
+/* ★ (新功能) 按鈕的容器 */
+.controls {
+    margin-top: 20px; /* 離畫布 20px */
+}
+
+/* ★ (新功能) 針對所有的 button */
+.controls button {
+    padding: 10px 20px; /* 按鈕的內邊距 */
+    font-size: 18px; /* 字體大小 */
+    font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
+    border: none; /* 不要邊框 */
+    border-radius: 5px; /* 圓角 */
+    cursor: pointer; /* 滑鼠移上去變手指 */
+    margin: 0 5px; /* 兩個按鈕之間的距離 */
+}
+
+/* ★ (新功能) 「暫停」按鈕的樣式 */
+#pauseButton {
+    display: inline-block; /* 預設顯示 (inline-block 才能跟別人排在一起) */
+    background-color: #ffc107; /* 警告的黃色 */
+    color: black;
+}
+
+#pauseButton:hover {
+    background-color: #e0a800;
+}
+
+
+/* 「重新開始」按鈕的樣式 */
+#restartButton {
+    display: none; /* 1. 預設是隱藏的 */
+    
+    color: white; /* 白色文字 */
+    background-color: #007BFF; /* 藍色背景 */
+}
+
+#restartButton:hover {
+    background-color: #0056b3;
+}
