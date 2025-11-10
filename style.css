@@ -1,4 +1,4 @@
-/* style.css (完整更新版 - 已移除觸控按鈕樣式) */
+/* style.css (完整更新版) */
 
 body {
     display: flex;
@@ -26,7 +26,7 @@ h1 {
     width: min(400px, 90vw); 
     height: min(400px, 90vw); 
     
-    /* ★ (新功能) 讓畫布在觸控時有更好的反應 */
+    /* 讓畫布在觸控時有更好的反應 */
     touch-action: none; /* 防止瀏覽器預設的觸控行為 (例如捲動) */
 }
 
@@ -36,9 +36,6 @@ h1 {
     margin-top: 5px; 
     margin-bottom: 15px; 
 }
-
-/* (所有 .touch-controls 和 .arrow-button 的 CSS 都被刪除了) */
-
 
 .controls {
     margin-top: 20px; 
@@ -69,7 +66,7 @@ h1 {
 }
 
 #restartButton {
-    display: none; 
+    display: none; /* 預設隱藏，遊戲結束才顯示 */
     color: white; 
     background-color: #007BFF; 
 }
@@ -77,5 +74,3 @@ h1 {
 #restartButton:hover {
     background-color: #0056b3;
 }
-
-/* (所有 @media 媒體查詢中關於 .touch-controls 的部分也都刪除了) */

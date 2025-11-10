@@ -1,4 +1,4 @@
-// script.js (最終修正版 - 改為「螢幕觸控」)
+/* script.js (最終修正版) */
 
 // --- 1. 取得 HTML 元素 ---
 const canvas = document.getElementById('gameCanvas');
@@ -6,8 +6,6 @@ const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const restartButton = document.getElementById('restartButton');
 const pauseButton = document.getElementById('pauseButton');
-
-// (★ 取得觸控方向按鈕... 這整段都刪除了)
 
 // --- 2. 遊戲的基本單位 ---
 const grid = 20;
@@ -54,6 +52,11 @@ function gameLoop() {
         return; 
     }
     
+    // 遊戲暫停時，不執行任何更新
+    if (isPaused) {
+        return;
+    }
+    
     dx = nextDx;
     dy = nextDy;
 
@@ -66,7 +69,7 @@ function gameLoop() {
 
 // --- 7. 畫出蛇的函式 ---
 function drawSnake() {
-    ctx.fillStyle = 'blue'; // (蛇還是藍色的)
+    ctx.fillStyle = 'blue'; 
     snake.forEach(segment => {
         ctx.fillRect(segment.x * grid, segment.y * grid, grid, grid);
     });
@@ -84,13 +87,15 @@ function moveSnake() {
     head.x += dx;
     head.y += dy;
 
+    // 穿牆邏輯
     if (head.x < 0) head.x = gridCount - 1;
     else if (head.x >= gridCount) head.x = 0;
     if (head.y < 0) head.y = gridCount - 1;
     else if (head.y >= gridCount) head.y = 0;
 
+    // 檢查是否撞到自己 (★ 這裡已修正 head.y)
     for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.body === snake[i].y) {
+        if (head.x === snake[i].x && head.y === snake[i].y) { 
             isGameOver = true;
             return; 
         }
@@ -163,44 +168,51 @@ function handleDirectionChange(key) {
     }
 }
 
-// --- ★ (這是全新的) 處理「畫布觸控」的函式 ---
+// --- 處理「畫布觸控」的函式 ---
 function handleCanvasTouch(event) {
     // 阻止頁面捲動
     event.preventDefault(); 
-    if (isGameOver || isPaused) return; 
-
-    // 取得畫布在螢幕上的實際位置
-    const rect = canvas.getBoundingClientRect();
-    // 取得使用者點擊的第一個點 (相對於「螢幕」)
-    const touch = event.touches[0];
+    if (isGameOver) return; // 遊戲結束後，點擊畫布不應觸發暫停
     
-    // 計算點擊位置 (相對於「畫布」的中心點)
-    const touchX = touch.clientX - rect.left - rect.width / 2;
-    const touchY = touch.clientY - rect.top - rect.height / 2;
-    
-    const goingUp = (dy === -1), goingDown = (dy === 1);
-    const goingRight = (dx === 1), goingLeft = (dx === -1);
+    // 如果遊戲未暫停，則觸控為移動
+    if (!isPaused) {
+        // 取得畫布在螢幕上的實際位置
+        const rect = canvas.getBoundingClientRect();
+        // 取得使用者點擊的第一個點 (相對於「螢幕」)
+        const touch = event.touches[0];
+        
+        // 計算點擊位置 (相對於「畫布」的中心點)
+        const touchX = touch.clientX - rect.left - rect.width / 2;
+        const touchY = touch.clientY - rect.top - rect.height / 2;
+        
+        const goingUp = (dy === -1), goingDown = (dy === 1);
+        const goingRight = (dx === 1), goingLeft = (dx === -1);
 
-    // 檢查點擊位置是在「水平」還是「垂直」方向
-    // Math.abs() 是取絕對值 (不管正負)
-    if (Math.abs(touchX) > Math.abs(touchY)) {
-        // --- 水平方向 (點了左邊或右邊) ---
-        if (touchX > 0 && !goingLeft) {
-            // 點了右邊 (touchX 是正數)
-            nextDx = 1; nextDy = 0;
-        } else if (touchX < 0 && !goingRight) {
-            // 點了左邊 (touchX 是負數)
-            nextDx = -1; nextDy = 0;
+        // 檢查點擊位置是在「水平」還是「垂直」方向
+        // Math.abs() 是取絕對值 (不管正負)
+        if (Math.abs(touchX) > Math.abs(touchY)) {
+            // --- 水平方向 (點了左邊或右邊) ---
+            if (touchX > 0 && !goingLeft) {
+                // 點了右邊 (touchX 是正數)
+                nextDx = 1; nextDy = 0;
+            } else if (touchX < 0 && !goingRight) {
+                // 點了左邊 (touchX 是負數)
+                nextDx = -1; nextDy = 0;
+            }
+        } else {
+            // --- 垂直方向 (點了上面或下面) ---
+            if (touchY > 0 && !goingUp) {
+                // 點了下面 (touchY 是正數)
+                nextDx = 0; nextDy = 1;
+            } else if (touchY < 0 && !goingDown) {
+                // 點了上面 (touchY 是負數)
+                nextDx = 0; nextDy = -1;
+            }
         }
-    } else {
-        // --- 垂直方向 (點了上面或下面) ---
-        if (touchY > 0 && !goingUp) {
-            // 點了下面 (touchY 是正數)
-            nextDx = 0; nextDy = 1;
-        } else if (touchY < 0 && !goingDown) {
-            // 點了上面 (touchY 是負數)
-            nextDx = 0; nextDy = -1;
-        }
+    }
+    // 如果遊戲已暫停，則觸控畫布等於按下「繼續」
+    else {
+        togglePauseGame();
     }
 }
 
@@ -234,7 +246,7 @@ function togglePauseGame() {
     isPaused = !isPaused; 
 
     if (isPaused) {
-        clearInterval(gameInterval);
+        // clearInterval(gameInterval); // gameLoop 內部會檢查 isPaused，這裡可以不用清
         ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height); 
         ctx.fillStyle = "white"; 
@@ -244,7 +256,7 @@ function togglePauseGame() {
         pauseButton.textContent = '繼續';
     } else {
         pauseButton.textContent = '暫停';
-        gameInterval = setInterval(gameLoop, currentSpeed);
+        // gameInterval = setInterval(gameLoop, currentSpeed); // 移到 gameLoop 頂部檢查
     }
 }
 
@@ -257,13 +269,15 @@ document.addEventListener("keydown", (event) => {
     handleDirectionChange(event.key);
 });
 
+// --- -------------------- ---
+// --- 按鈕 & 畫布事件監聽 ---
+// --- -------------------- ---
+
 // --- 重新開始按鈕 點擊監聽 ---
 restartButton.addEventListener('click', restartGame);
 
 // --- 暫停按鈕 點擊監聽 ---
 pauseButton.addEventListener('click', togglePauseGame);
 
-// --- ★ (這是全新的) 「畫布」觸控事件監聽 ---
-canvas.addEventListener('touchstart', handleCanvasTouch);
-
-// (★ 所有 upButton, downButton... 的事件監聽都刪除了)
+// --- 「畫布」觸控事件監聽 ---
+canvas.addEventListener('touchstart', handleCanvasTouch, { passive: false });
