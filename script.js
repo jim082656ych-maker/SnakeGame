@@ -228,14 +228,45 @@ function togglePauseGame() {
 gameInterval = setInterval(gameLoop, currentSpeed); 
 
 // --- 重新開始按鈕 點擊監聽 ---
+// (功能按鈕在手機和桌機上都使用 'click' 即可)
 restartButton.addEventListener('click', restartGame);
 
 // --- 暫停按鈕 點擊監聽 ---
 pauseButton.addEventListener('click', togglePauseGame);
 
-// ★ 觸控方向按鈕點擊監聽
-upButton.addEventListener('click', () => handleDirectionChange('up'));
-downButton.addEventListener('click', () => handleDirectionChange('down'));
-leftButton.addEventListener('click', () => handleDirectionChange('left'));
-rightButton.addEventListener('click', () => handleDirectionChange('right'));
+// ★ 觸控方向按鈕點擊監聽 (iPhone 修正版)
+// 
+// 說明：
+// 1. 我們改用 'touchstart' 事件，這是觸控螢幕的「按下」事件，反應最快。
+// 2. 我們必須加上 event.preventDefault()，用來防止 iPhone 誤以為你想「捲動」頁面。
 
+upButton.addEventListener('touchstart', (event) => {
+    event.preventDefault(); // 阻止頁面捲動
+    handleDirectionChange('up');
+});
+
+downButton.addEventListener('touchstart', (event) => {
+    event.preventDefault(); // 阻止頁面捲動
+    handleDirectionChange('down');
+});
+
+leftButton.addEventListener('touchstart', (event) => {
+    event.preventDefault(); // 阻止頁面捲動
+    handleDirectionChange('left');
+});
+
+rightButton.addEventListener('touchstart', (event) => {
+    event.preventDefault(); // 阻止頁ត捲動
+    handleDirectionChange('right');
+});
+
+// --- 為了桌機測試方便，我們也保留 'click' ---
+// (這段是可選的，但建議保留，這樣在桌機上用滑鼠點擊也能玩)
+// (手機會優先觸發 touchstart，所以不會有衝突)
+
+if (!navigator.userAgent.match(/iPhone|iPad|Android/i)) {
+    upButton.addEventListener('click', () => handleDirectionChange('up'));
+    downButton.addEventListener('click', () => handleDirectionChange('down'));
+    leftButton.addEventListener('click', () => handleDirectionChange('left'));
+    rightButton.addEventListener('click', () => handleDirectionChange('right'));
+}
