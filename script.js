@@ -1,4 +1,4 @@
-// script.js (最終修正版 - 確保觸控按鈕可靠運作)
+// script.js (完整更新版 - 蛇變成藍色)
 
 // --- 1. 取得 HTML 元素 ---
 const canvas = document.getElementById('gameCanvas');
@@ -71,7 +71,9 @@ function gameLoop() {
 
 // --- 7. 畫出蛇的函式 ---
 function drawSnake() {
-    ctx.fillStyle = 'green';
+    // ★ (這就是你想要的修改！)
+    ctx.fillStyle = 'blue'; // 蛇的顏色從 'green' 改成了 'blue'
+    
     snake.forEach(segment => {
         ctx.fillRect(segment.x * grid, segment.y * grid, grid, grid);
     });
@@ -228,18 +230,12 @@ function togglePauseGame() {
 gameInterval = setInterval(gameLoop, currentSpeed); 
 
 // --- 重新開始按鈕 點擊監聽 ---
-// (功能按鈕在手機和桌機上都使用 'click' 即可)
 restartButton.addEventListener('click', restartGame);
 
 // --- 暫停按鈕 點擊監聽 ---
 pauseButton.addEventListener('click', togglePauseGame);
 
 // ★ 觸控方向按鈕點擊監聽 (iPhone 修正版)
-// 
-// 說明：
-// 1. 我們改用 'touchstart' 事件，這是觸控螢幕的「按下」事件，反應最快。
-// 2. 我們必須加上 event.preventDefault()，用來防止 iPhone 誤以為你想「捲動」頁面。
-
 upButton.addEventListener('touchstart', (event) => {
     event.preventDefault(); // 阻止頁面捲動
     handleDirectionChange('up');
@@ -261,9 +257,6 @@ rightButton.addEventListener('touchstart', (event) => {
 });
 
 // --- 為了桌機測試方便，我們也保留 'click' ---
-// (這段是可選的，但建議保留，這樣在桌機上用滑鼠點擊也能玩)
-// (手機會優先觸發 touchstart，所以不會有衝突)
-
 if (!navigator.userAgent.match(/iPhone|iPad|Android/i)) {
     upButton.addEventListener('click', () => handleDirectionChange('up'));
     downButton.addEventListener('click', () => handleDirectionChange('down'));
