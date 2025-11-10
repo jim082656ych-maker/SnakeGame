@@ -1,4 +1,4 @@
-// script.js (完整更新版 - 蛇變成藍色)
+// script.js (最終修正版 - 改為「螢幕觸控」)
 
 // --- 1. 取得 HTML 元素 ---
 const canvas = document.getElementById('gameCanvas');
@@ -7,12 +7,7 @@ const scoreDisplay = document.getElementById('scoreDisplay');
 const restartButton = document.getElementById('restartButton');
 const pauseButton = document.getElementById('pauseButton');
 
-// ★ 取得觸控方向按鈕
-const upButton = document.getElementById('upButton');
-const downButton = document.getElementById('downButton');
-const leftButton = document.getElementById('leftButton');
-const rightButton = document.getElementById('rightButton');
-
+// (★ 取得觸控方向按鈕... 這整段都刪除了)
 
 // --- 2. 遊戲的基本單位 ---
 const grid = 20;
@@ -71,9 +66,7 @@ function gameLoop() {
 
 // --- 7. 畫出蛇的函式 ---
 function drawSnake() {
-    // ★ (這就是你想要的修改！)
-    ctx.fillStyle = 'blue'; // 蛇的顏色從 'green' 改成了 'blue'
-    
+    ctx.fillStyle = 'blue'; // (蛇還是藍色的)
     snake.forEach(segment => {
         ctx.fillRect(segment.x * grid, segment.y * grid, grid, grid);
     });
@@ -97,7 +90,7 @@ function moveSnake() {
     else if (head.y >= gridCount) head.y = 0;
 
     for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
+        if (head.x === snake[i].x && head.body === snake[i].y) {
             isGameOver = true;
             return; 
         }
@@ -143,28 +136,24 @@ function createFood() {
     }
 }
 
-// --- 統一處理方向改變的函式 ---
-function handleDirectionChange(direction) {
+// --- 統一處理方向改變的函式 (鍵盤用) ---
+function handleDirectionChange(key) {
     if (isGameOver || isPaused) return; 
     
     const goingUp = (dy === -1), goingDown = (dy === 1);
     const goingRight = (dx === 1), goingLeft = (dx === -1);
     
-    switch (direction) {
+    switch (key) {
         case "ArrowUp":
-        case "up":
             if (!goingDown) { nextDx = 0; nextDy = -1; }
             break;
         case "ArrowDown":
-        case "down":
             if (!goingUp) { nextDx = 0; nextDy = 1; }
             break;
         case "ArrowLeft":
-        case "left":
             if (!goingRight) { nextDx = -1; nextDy = 0; }
             break;
         case "ArrowRight":
-        case "right":
             if (!goingLeft) { nextDx = 1; nextDy = 0; }
             break;
         case 'p':
@@ -174,10 +163,46 @@ function handleDirectionChange(direction) {
     }
 }
 
-// --- 鍵盤事件監聽 ---
-document.addEventListener("keydown", (event) => {
-    handleDirectionChange(event.key);
-});
+// --- ★ (這是全新的) 處理「畫布觸控」的函式 ---
+function handleCanvasTouch(event) {
+    // 阻止頁面捲動
+    event.preventDefault(); 
+    if (isGameOver || isPaused) return; 
+
+    // 取得畫布在螢幕上的實際位置
+    const rect = canvas.getBoundingClientRect();
+    // 取得使用者點擊的第一個點 (相對於「螢幕」)
+    const touch = event.touches[0];
+    
+    // 計算點擊位置 (相對於「畫布」的中心點)
+    const touchX = touch.clientX - rect.left - rect.width / 2;
+    const touchY = touch.clientY - rect.top - rect.height / 2;
+    
+    const goingUp = (dy === -1), goingDown = (dy === 1);
+    const goingRight = (dx === 1), goingLeft = (dx === -1);
+
+    // 檢查點擊位置是在「水平」還是「垂直」方向
+    // Math.abs() 是取絕對值 (不管正負)
+    if (Math.abs(touchX) > Math.abs(touchY)) {
+        // --- 水平方向 (點了左邊或右邊) ---
+        if (touchX > 0 && !goingLeft) {
+            // 點了右邊 (touchX 是正數)
+            nextDx = 1; nextDy = 0;
+        } else if (touchX < 0 && !goingRight) {
+            // 點了左邊 (touchX 是負數)
+            nextDx = -1; nextDy = 0;
+        }
+    } else {
+        // --- 垂直方向 (點了上面或下面) ---
+        if (touchY > 0 && !goingUp) {
+            // 點了下面 (touchY 是正數)
+            nextDx = 0; nextDy = 1;
+        } else if (touchY < 0 && !goingDown) {
+            // 點了上面 (touchY 是負數)
+            nextDx = 0; nextDy = -1;
+        }
+    }
+}
 
 
 // --- 重新開始遊戲的函式 ---
@@ -206,7 +231,6 @@ function restartGame() {
 // --- 暫停/繼續 遊戲的函式 ---
 function togglePauseGame() {
     if (isGameOver) return;
-
     isPaused = !isPaused; 
 
     if (isPaused) {
@@ -217,7 +241,6 @@ function togglePauseGame() {
         const fontSize = Math.min(canvas.width / 8, 40);
         ctx.font = `${fontSize}px Arial`;
         ctx.fillText("遊戲暫停", canvas.width / 2 - ctx.measureText("遊戲暫停").width / 2, canvas.height / 2);
-        
         pauseButton.textContent = '繼續';
     } else {
         pauseButton.textContent = '暫停';
@@ -229,37 +252,18 @@ function togglePauseGame() {
 // --- 9. 啟動遊戲！ ---
 gameInterval = setInterval(gameLoop, currentSpeed); 
 
+// --- 11. 鍵盤事件監聽 ---
+document.addEventListener("keydown", (event) => {
+    handleDirectionChange(event.key);
+});
+
 // --- 重新開始按鈕 點擊監聽 ---
 restartButton.addEventListener('click', restartGame);
 
 // --- 暫停按鈕 點擊監聽 ---
 pauseButton.addEventListener('click', togglePauseGame);
 
-// ★ 觸控方向按鈕點擊監聽 (iPhone 修正版)
-upButton.addEventListener('touchstart', (event) => {
-    event.preventDefault(); // 阻止頁面捲動
-    handleDirectionChange('up');
-});
+// --- ★ (這是全新的) 「畫布」觸控事件監聽 ---
+canvas.addEventListener('touchstart', handleCanvasTouch);
 
-downButton.addEventListener('touchstart', (event) => {
-    event.preventDefault(); // 阻止頁面捲動
-    handleDirectionChange('down');
-});
-
-leftButton.addEventListener('touchstart', (event) => {
-    event.preventDefault(); // 阻止頁面捲動
-    handleDirectionChange('left');
-});
-
-rightButton.addEventListener('touchstart', (event) => {
-    event.preventDefault(); // 阻止頁ត捲動
-    handleDirectionChange('right');
-});
-
-// --- 為了桌機測試方便，我們也保留 'click' ---
-if (!navigator.userAgent.match(/iPhone|iPad|Android/i)) {
-    upButton.addEventListener('click', () => handleDirectionChange('up'));
-    downButton.addEventListener('click', () => handleDirectionChange('down'));
-    leftButton.addEventListener('click', () => handleDirectionChange('left'));
-    rightButton.addEventListener('click', () => handleDirectionChange('right'));
-}
+// (★ 所有 upButton, downButton... 的事件監聽都刪除了)

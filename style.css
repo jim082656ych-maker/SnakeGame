@@ -1,4 +1,4 @@
-/* style.css (完整更新版 - 包含響應式 + 觸控按鈕) */
+/* style.css (完整更新版 - 已移除觸控按鈕樣式) */
 
 body {
     display: flex;
@@ -25,6 +25,9 @@ h1 {
     max-height: 90vh; 
     width: min(400px, 90vw); 
     height: min(400px, 90vw); 
+    
+    /* ★ (新功能) 讓畫布在觸控時有更好的反應 */
+    touch-action: none; /* 防止瀏覽器預設的觸控行為 (例如捲動) */
 }
 
 #scoreDisplay {
@@ -34,55 +37,7 @@ h1 {
     margin-bottom: 15px; 
 }
 
-/* ★ (這就是你遺漏的) 觸控方向按鈕區塊 */
-.touch-controls {
-    display: flex; /* 讓內容垂直排列 */
-    flex-direction: column; 
-    align-items: center; /* 水平置中 */
-    margin-top: 20px;
-    width: min(300px, 80vw); /* 控制整個方向盤的寬度 */
-    user-select: none; /* 防止手機長按時選取文字 */
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE/Edge */
-}
-
-.left-right-buttons {
-    display: flex; /* 讓左右按鈕並排 */
-    width: 100%;
-    justify-content: space-between; /* 左右按鈕分開 */
-    margin: 10px 0; /* 上下有點距離 */
-}
-
-.arrow-button {
-    padding: 15px 20px; /* 大一點，好按 */
-    font-size: 1.5em; /* 箭頭字體大一點 */
-    background-color: #6c757d; /* 灰色 */
-    color: white;
-    border: none;
-    border-radius: 8px; /* 圓角更明顯 */
-    cursor: pointer;
-    flex-grow: 1; /* 讓按鈕盡量填滿空間 */
-    margin: 0 5px; /* 按鈕間隔 */
-    opacity: 0.8; /* 稍微透明 */
-}
-
-.arrow-button:hover {
-    background-color: #5a6268;
-    opacity: 1;
-}
-
-/* ★ (這就是你遺漏的) 預設在桌機上隱藏觸控按鈕，只在小螢幕顯示 */
-@media (min-width: 768px) {
-    .touch-controls {
-        display: none; /* 在寬螢幕上隱藏 */
-    }
-}
-@media (max-width: 767px) {
-    .touch-controls {
-        display: flex; /* 在小螢幕上顯示 */
-    }
-}
+/* (所有 .touch-controls 和 .arrow-button 的 CSS 都被刪除了) */
 
 
 .controls {
@@ -123,3 +78,4 @@ h1 {
     background-color: #0056b3;
 }
 
+/* (所有 @media 媒體查詢中關於 .touch-controls 的部分也都刪除了) */
