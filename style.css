@@ -1,76 +1,56 @@
-/* style.css (完整更新版) */
+CSS
 
 body {
+    font-family: 'Arial', sans-serif;
     display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    
-    height: 100vh; 
-    background-color: #f0f8ff; 
-    font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
-    margin: 0; 
-    overflow: hidden; 
+    flex-direction: column;
+    align-items: center; /* 水平置中 */
+    justify-content: center; /* 垂直置中 (在視窗高度足夠時) */
+    min-height: 90vh; /* 至少 90% 視窗高度 */
+    background-color: #f0f0f0; /* 淺灰色背景 */
+    color: #333;
+    margin: 0;
 }
 
-h1 { 
-    font-size: 2.5em; 
-    margin-bottom: 10px;
+h1 {
+    color: #4a4a4a;
+}
+
+h2#scoreDisplay {
+    color: #007BFF; /* 藍色分數 */
+    margin-bottom: 20px;
 }
 
 #gameCanvas {
-    border: 2px solid #000000;
-    background-color: #dddddd;
-    max-width: 90vw; 
-    max-height: 90vh; 
-    width: min(400px, 90vw); 
-    height: min(400px, 90vw); 
-    
-    /* 讓畫布在觸控時有更好的反應 */
-    touch-action: none; /* 防止瀏覽器預設的觸控行為 (例如捲動) */
-}
-
-#scoreDisplay {
-    font-size: 1.5em; 
-    color: #333; 
-    margin-top: 5px; 
-    margin-bottom: 15px; 
+    background-color: #333; /* 深色畫布背景 */
+    border: 5px solid #555; /* 邊框 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 加點陰影 */
 }
 
 .controls {
-    margin-top: 20px; 
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: center; 
+    margin-top: 20px;
 }
 
 .controls button {
-    padding: 10px 20px; 
-    font-size: 1em; 
-    font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
-    border: none; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    margin: 5px; 
-    min-width: 100px; 
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    transition: background-color 0.3s ease;
 }
 
-#pauseButton {
-    display: inline-block; 
-    background-color: #ffc107; 
-    color: black;
-}
-
-#pauseButton:hover {
-    background-color: #e0a800;
+.controls button:hover {
+    background-color: #0056b3;
 }
 
 #restartButton {
-    display: none; /* 預設隱藏，遊戲結束才顯示 */
-    color: white; 
-    background-color: #007BFF; 
+    background-color: #dc3545; /* 紅色 */
 }
 
 #restartButton:hover {
-    background-color: #0056b3;
-}
+    background-color: #c82333;
+    
