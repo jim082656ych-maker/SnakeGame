@@ -9,16 +9,27 @@
 </head>
 <body>
 
-    <h1>貪食蛇</h1>
-    <h2 id="scoreDisplay">分數: 0</h2>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="game-container">
 
-    <div class="controls">
-        <button id="pauseButton">暫停</button>
-        <button id="restartButton">重新開始</button>
-    </div>
+        <h1>貪食蛇</h1>
+        <h2 id="scoreDisplay">分數: 0</h2>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
 
-    <script src="script.js"></script>
+        <div class="controls">
+            <button id="pauseButton">暫停</button>
+            <button id="restartButton">重新開始</button>
+        </div>
+
+        <div class="instructions">
+            <h3>遊戲說明</h3>
+            <ul>
+                <li><strong>電腦:</strong> 使用 W/A/S/D 或方向鍵 (↑↓←→) 移動。</li>
+                <li><strong>電腦:</strong> 按下「空白鍵」可暫停或繼續遊戲。</li>
+                <li><strong>手機:</strong> 在畫布上「上/下/左/右」滑動來移動。</li>
+            </ul>
+        </div>
+
+    </div> <script src="script.js" defer></script>
     
 </body>
 </html>

@@ -1,56 +1,122 @@
-CSS
-
-body {
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 水平置中 */
-    justify-content: center; /* 垂直置中 (在視窗高度足夠時) */
-    min-height: 90vh; /* 至少 90% 視窗高度 */
-    background-color: #f0f0f0; /* 淺灰色背景 */
-    color: #333;
+/* 將所有元素的預設邊距和內邊距歸零，使用 border-box 盒模型 */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
+/* 整個網頁的樣式 */
+body {
+    font-family: 'MingLiU', '新細明體', serif; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #b0e0e6; /* 保留淺藍色底 */
+    overflow: hidden;
+}
+
+/* 遊戲容器 */
+.game-container {
+    /* [!修改] 原深藍背景改成黃色 */
+    background-color: #f1c40f; /* 亮黃色 */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    /* [!修改] 文字改為深色才能閱讀 */
+    color: #333; 
+    position: relative;
+    max-width: 480px;
+}
+
+/* 遊戲標題 */
 h1 {
-    color: #4a4a4a;
-}
-
-h2#scoreDisplay {
-    color: #007BFF; /* 藍色分數 */
+    font-size: 2em;
     margin-bottom: 20px;
+    /* [!修改] 文字改為深色 */
+    color: #333;
+    /* [!修改] 移除陰影，黃底白字不好看 */
+    text-shadow: none; 
 }
 
+/* 遊戲畫布 */
 #gameCanvas {
-    background-color: #333; /* 深色畫布背景 */
-    border: 5px solid #555; /* 邊框 */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 加點陰影 */
+    /* [!修改] 原黑色背景改成白色 */
+    background-color: #ffffff; 
+    /* [!修改] 原深藍邊框改成黃色 */
+    border: 5px solid #f1c40f; 
+    border-radius: 8px;
+    display: block; 
+    margin: 0 auto 20px auto; 
+    /* [!修改] 內陰影改淺色，在白色背景上才好看 */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); 
 }
 
+/* 分數顯示 */
+#scoreDisplay {
+    font-size: 1.5em;
+    margin-bottom: 25px;
+    /* [!修改] 原黃色分數改成深色 */
+    color: #333;
+    text-shadow: none;
+}
+
+/* 按鈕容器 */
 .controls {
-    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
 
-.controls button {
-    font-size: 16px;
-    padding: 10px 20px;
-    margin: 0 10px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
+/* 按鈕樣式 (藍色按鈕在黃色背景上很好看，予以保留) */
+button {
+    font-family: 'MingLiU', '新細明體', serif;
+    background-color: #3498db; 
     color: white;
-    transition: background-color 0.3s ease;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 5px #2980b9; 
+    outline: none;
 }
 
-.controls button:hover {
-    background-color: #0056b3;
+/* 按鈕懸停/點擊效果 */
+button:hover {
+    background-color: #2980b9;
+    /* [!修改] 原深藍陰影改為中性灰色 */
+    box-shadow: 0 3px #999; 
+    transform: translateY(2px);
 }
 
-#restartButton {
-    background-color: #dc3545; /* 紅色 */
+button:active {
+    background-color: #217dbb;
+    box-shadow: 0 0 #999;
+    transform: translateY(5px);
 }
 
-#restartButton:hover {
-    background-color: #c82333;
-    
+/* [!新增] 說明區塊的樣式 */
+.instructions {
+    margin-top: 25px;
+    text-align: left; /* 說明文字靠左對齊 */
+    font-size: 0.9em;
+    color: #333; /* 使用深色文字 */
+}
+
+.instructions h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.instructions ul {
+    list-style-position: inside; /* 讓項目符號在區塊內 */
+    padding-left: 5px;
+}
+
+.instructions li {
+    margin-bottom: 5px;
+}
